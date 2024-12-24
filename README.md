@@ -1,9 +1,7 @@
-*fixed fca by Kenneth my ngegah*
+# 𝖆𝖐𝖆𝖒𝖎 💖
 
-*Fixed Botpack by Jonell Sigma Boy*
+![أكامي بوت](https://i.postimg.cc/xjZgQwSL/1730939819791.jpg)
+<img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="500">
+<br><br>
 
-*Botpack files Original By Yan Maglinte*
-
-
-![Screenshot_2024-12-15-11-12-24-75](https://github.com/user-attachments/assets/2cb32cbb-c74e-4eea-be74-923ead604208)
-
+<img src="https://user-images.githubusercontent.com/74038190/216649426-0c2ee152-84d8-4707-85c4-27a378d2f78a.gif" width="160" />
