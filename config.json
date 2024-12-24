@@ -1,6 +1,6 @@
 {
   "version": "1.7.6",
-  "language": "en",
+  "language": "ar",
   "useEnvForCredentials": false,
   "envGuide": "When useEnvForCredentials enabled, it will use the process.env key provided for email and password, which helps hide your credentials, you can find env in render's environment tab, you can also find it in replit secrets.",
   "DeveloperMode": true,
@@ -26,16 +26,16 @@
     "resend.js"
   ],
   "eventDisabled": [],
-  "OWNER": "OWNER OF BOT",
-  "BOTNAME": "BOTNAME HERE",
-  "PREFIX": "?",
+  "OWNER": "HUSSEIN",
+  "BOTNAME": "𝖆𝖐𝖆𝖒𝖎",
+  "PREFIX": "*",
   "ADMINBOT": [
     "UID HERE ADMIN",
     ""
   ],
   "DESIGN": {
-    "Title": "BOTPACK",
-    "Theme": "BLUE",
+    "Title": "AKAMI",
+    "Theme": "purple",
     "Admin": "FIXED BY JONELL",
     "Setup": {
       "Info": "Design your own custom terminal Titlebar for the title and must contain no numbers",
