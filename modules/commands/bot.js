@@ -1,6 +1,6 @@
 const fs = global.nodemodule["fs-extra"];
 module.exports.config = {
-  name: "اكامي",
+  name: "ميكو",
   version: "1.0.1",
   hasPermssion: 0,
   credits: "S H A D O W",
@@ -64,7 +64,7 @@ if ((event.body.toLowerCase() == "كيفها حياتك ") || (event.body.toLowe
    };
    
    if ((event.body.toLowerCase() == "بوت") || (event.body.toLowerCase() == "يا بوت ")) {
-     return api.sendMessage("️يا روحها اسمي اكامي عمتك 💖", threadID, messageID);
+     return api.sendMessage("️يا روحها اسمي ميكو عمتك 💖", threadID, messageID);
    };
   
   if ((event.body.toLowerCase() == "جييتت") || (event.body.toLowerCase() == "باااكك")) {
@@ -76,7 +76,7 @@ if ((event.body.toLowerCase() == "كيفها حياتك ") || (event.body.toLowe
    };
    mess = "{name}"
   
-  if (event.body.indexOf("كيوتتي") == 0 || (event.body.indexOf("اكامي") == 0)) {
+  if (event.body.indexOf("كيوتتي") == 0 || (event.body.indexOf("ميكو") == 0)) {
     var msg = {
       body: ` ${rand}`
     }
