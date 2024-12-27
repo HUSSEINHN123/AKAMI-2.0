@@ -1,91 +1,81 @@
+const fs = require("fs-extra");
+const path = require("path");
+const axios = require("axios");
+
 module.exports.config = {
-    name: "joinNoti",
-    eventType: ["log:subscribe"],
-    version: "1.0.4",
-  credits: "S H A D O W",
-    description: "notifi member join",
-    dependencies: {
-        "fs-extra": ""
-    }
+  name: "joinNoti",
+  eventType: ["log:subscribe"],
+  version: "1.0.6",
+  credits: "عمر + S H A D O W",
+  description: "إرسال رسالة ترحيب مع صورة بروفايل العضو الجديد واسم المجموعة وترتيبه",
+  dependencies: {
+    "fs-extra": "",
+    "path": "",
+    "axios": ""
+  }
 };
 
-module.exports.run = async function({ api, event, Users, Threads }) {
-   var fullYear = global.client.getTime("fullYear");
-  	var getHours = await global.client.getTime("hours");
-			var session = `${getHours < 3 ? "بعد منتصف الليل" : getHours < 8 ? "الصباح الباكر" : getHours < 11 ? "وقت الظهيرة" : getHours < 16 ? "قبل الظهر" : getHours < 23 ? "الليل" : "منتصف الليل"}`
-    const { join } = global.nodemodule["path"];
-    const { threadID } = event;
-  const { PREFIX } = global.config;
-    console.log(2)
-    if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-        console.log(1)
-        return api.sendMessage("⌯ تم التفعيل بنجاح", threadID, async () => {
-            let check = true;
-            while (check) {
-                setTimeout(() => check = false, 30 * 1000);
-                const threadData = (await Threads.getInfo(threadID)) || {};
-                if (threadData.hasOwnProperty("adminIDs")) {
-                    check = false;
-                    api.sendMessage("", threadID, (err, info) => {
-                        global.client.handleReply.push({
-                            name: "langChoose_0x01042022",
-                            messageID: info.messageID,
-                            adminIDs: threadData.adminIDs
-                        });
-                    });
-                }
-            }
-            api.changeNickname(`[ . ] • ${(!global.config.BOTNAME) ? "Made By S H A D O W" : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
-          	api.sendMessage(`نجح الاتصال 👀💞
+module.exports.run = async function ({ api, event, Users, Threads }) {
+  const { threadID, logMessageData } = event;
 
-مرحبا بك في عالمي الخاص
+  // تحقق إذا كان البوت قد أضيف
+  if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
+    return api.sendMessage("⌯ تم التفعيل بنجاح", threadID, () => {
+      api.changeNickname(`[ . ] • ${global.config.BOTNAME || "Made By S H A D O W"}`, threadID, api.getCurrentUserID());
+      api.sendMessage(
+        `نجح الاتصال 👀💞
 
-استخدم .الاوامر لرؤيه الاوامر
+مرحبًا بك في عالمي الخاص
 
-ممنوع السبام واحداث المشاكل
+استخدم .الاوامر لرؤية الأوامر
 
-في حاله حظر مجموعتك راسل المطور 
-`, threadID);
-		}); 
-	}
-    else {
-        try {
-            const { createReadStream, existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-            let { threadName, participantIDs } = await api.getThreadInfo(threadID);
+ممنوع السبام وإحداث المشاكل
 
-            const threadData = global.data.threadData.get(parseInt(threadID)) || {};
-			const path = join(__dirname, "cache", "joinGif");
-			const pathGif = join(path, `hi5.jpg`);
+في حال حظر مجموعتك، راسل المطور.`,
+        threadID
+      );
+    });
+  }
 
-			var mentions = [], nameArray = [], memLength = [], i = 0;
-			
-			for (id in event.logMessageData.addedParticipants) {
-				const userName = event.logMessageData.addedParticipants[id].fullName;
-				nameArray.push(userName);
-				mentions.push({ tag: userName, id });
-				memLength.push(participantIDs.length - i++);
+  // رسالة ترحيب الأعضاء الجدد
+  try {
+    const { addedParticipants } = logMessageData;
+    let mentions = [];
+    let names = [];
+    let memLength = [];
+    const threadInfo = await api.getThreadInfo(threadID);
+    const { threadName, participantIDs } = threadInfo;
+    const totalMembers = participantIDs.length;
 
-				if (!global.data.allUserID.includes(id)) {
-					await Users.createData(id, { name: userName, data: {} });
-					global.data.userName.set(id, userName);
-					global.data.allUserID.push(id);
-				}
-			}
-			memLength.sort((a, b) => a - b);
-			
-			(typeof threadData.customJoin == "undefined") ? msg = " {name} :مرحبا\n في مجموعه  {threadName} \n{type} مـــنـــور/ه" : msg = threadData.customJoin;
-			msg = msg
-			.replace(/\{name}/g, nameArray.join(', '))
-			.replace(/\{type}/g, (memLength.length > 1) ?  'các bạn' : '')
-			.replace(/\{soThanhVien}/g, memLength.join(', '))
-			.replace(/\{threadName}/g, threadName);
+    for (const participant of addedParticipants) {
+      const { userFbId, fullName } = participant;
+      const userInfo = await api.getUserInfo(userFbId);
+      const userName = userInfo[userFbId].name || fullName;
+      const userRank = totalMembers + 1; // ترتيب العضو الجديد
 
-			if (existsSync(path)) mkdirSync(path, { recursive: true });
+      names.push(userName);
+      mentions.push({ tag: userName, id: userFbId });
 
-			if (existsSync(pathGif)) formPush = { body: msg, attachment: createReadStream(pathGif), mentions }
-			else formPush = { body: msg, mentions }
+      // جلب صورة البروفايل
+      const avatarPath = path.join(__dirname, "cache", `avatar_${userFbId}.png`);
+      const avatarData = (await axios.get(`https://api-canvass.vercel.app/profile?uid=${userFbId}`, { responseType: "arraybuffer" })).data;
+      fs.writeFileSync(avatarPath, Buffer.from(avatarData, "utf-8"));
 
-			return api.sendMessage(formPush, threadID);
-		} catch (e) { return console.log(e) };
-	}
-}
+      const welcomeMessage = `❏ إســـمـــك: ${userName}\n❏ مــجــمــوعــتــنــا: "${threadName}"\n❏ تــرتــيــبــك: ${userRank}`;
+      await api.sendMessage({ body: welcomeMessage, attachment: fs.createReadStream(avatarPath) }, threadID, () => {
+        fs.unlinkSync(avatarPath);
+      });
+    }
+
+    let msgTemplate = "مرحبًا {name} في مجموعة {threadName}، ترتيبك الحالي هو {rank}! 🎉";
+    let msg = msgTemplate
+      .replace(/\{name}/g, names.join(", "))
+      .replace(/\{threadName}/g, threadName)
+      .replace(/\{rank}/g, totalMembers + addedParticipants.length);
+
+    api.sendMessage({ body: msg, mentions }, threadID);
+  } catch (error) {
+    console.error(error);
+    api.sendMessage("حدث خطأ أثناء إرسال رسالة الترحيب.", threadID);
+  }
+};
